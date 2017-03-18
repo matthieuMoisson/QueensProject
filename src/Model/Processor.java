@@ -7,7 +7,15 @@ import java.util.Random;
  */
 public class Processor {
 
+    public int[] getQueens() {
+        return queens;
+    }
+
     public int[] queens;
+
+    public int getNbQueens() {
+        return nbQueens;
+    }
 
     private int nbQueens;
 
@@ -36,7 +44,7 @@ public class Processor {
         }
     }
 
-    private void permute(int x, int y) {
+    public void permute(int x, int y) {
         int tmp = queens[x];
         queens[x] = queens[y];
         queens[y] = tmp;

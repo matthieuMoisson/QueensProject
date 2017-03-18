@@ -10,20 +10,9 @@ public class QueenGame {
     public Processor getProcessor() {return this.processor;}
 
     public QueenGame(int nbQueen) {
-
         processor = new Processor(nbQueen);
         processor.fillRandom();
-
-        int nbIt = 0;
-
-        while (processor.calculateNbConflicts() > 0) {
-            processor.fillRandom();
-            nbIt ++;
-        }
-        System.out.println(processor);
-        System.out.println(nbIt);
-        int nbConflicts = processor.calculateNbConflicts();
-        System.out.println(nbConflicts);
-
+        Tabou tabou = new Tabou(processor, 100, 0);
+        tabou.algoTabou();
     }
 }
