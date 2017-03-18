@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    private static final int NB_QUEENS = 10;
+    private static final int NB_QUEENS = 15;
     private static final double SCREEN_WIDTH = 500;
     private static Processor processor;
     private final double COL_WIDTH = SCREEN_WIDTH / NB_QUEENS;
@@ -43,7 +43,7 @@ public class Main extends Application {
         for (int i = 0; i < NB_QUEENS; i ++) {
             Circle circle = new Circle(COL_WIDTH /2);
             circle.setFill(Color.BLUE);
-            root.add(circle, i, processor.queens[i]); // column=2 row=1
+            root.add(circle, i, processor.queens[i]-1); // column=2 row=1
         }
 
         primaryStage.show();
