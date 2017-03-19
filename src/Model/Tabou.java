@@ -7,27 +7,22 @@ import java.util.List;
  * Created by p1509413 on 15/03/2017.
  */
 
-public class Tabou{
+public class Tabou extends AlgoRecherche{
 
     private int nbMaxIteration;
 
     private int nbTabou;
 
-    private final Processor processor;
-
     int [][] neighbors;
-
-    private List<int[]> listeVoisins;
 
     private List<int[]> listeTabou;
 
 
     public Tabou(Processor processor, int nbMaxIteration, int nbTabou) {
-        this.processor = processor;
+        super(processor);
         this.nbMaxIteration = nbMaxIteration;
         this.nbTabou = nbTabou;
         this.initListeTabou();
-        this.initListeVoisins();
     }
 
     // Fonction tabou qui prend le processor (donc le tableau de dame actuel et calcule tout ce que tu veut
@@ -36,6 +31,7 @@ public class Tabou{
         this.initListeTabou();
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, i=0, indice = this.getBestNeighbors();
+        System.out.println("Nb de conflit de la solution initial : " + fMin);
         do{
             if(listeVoisins.size()>=0){
                 indice = this.getBestNeighbors();
@@ -57,8 +53,8 @@ public class Tabou{
             i++;
         }while(i <= nbMaxIteration && listeVoisins.size() > 0 && fSuivant != 0);
         System.out.println("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts());
-        System.out.println("i : " + i);
-        System.out.println("Taille tabou : " + this.listeTabou.size());
+        System.out.println("Nombe d'itération : " + i);
+        System.out.println("Taille de la liste tabou : " + this.listeTabou.size());
     }
 
 
@@ -76,25 +72,6 @@ public class Tabou{
             processor.permute(listeVoisins.get(i)[0], listeVoisins.get(i)[1]);
         }
         return iMin;
-    }
-
-
-
-    private void initListeVoisins(){
-        this.listeVoisins = new ArrayList<int[]>();
-        int nbQueens = this.processor.getNbQueens();
-        int nbPermutation = ((nbQueens-1)*nbQueens) /2;
-        // Listes de tout les voisins, à gauche l'indice du voisins, à droite la valeur de la colonne
-        // System.out.println("Initiale : " + toString());
-        int[] voisin = new int[2];
-        for(int firstCol = 0; firstCol < nbQueens-1; firstCol ++) {
-            for (int secondCol = firstCol + 1; secondCol < nbQueens; secondCol++) {
-                voisin = new int[2];
-                voisin[0] = firstCol;
-                voisin[1] = secondCol;
-                this.listeVoisins.add(voisin);
-            }
-        }
     }
 
     private void initListeTabou(){

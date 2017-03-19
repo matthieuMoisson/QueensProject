@@ -9,10 +9,10 @@ public class QueenGame {
 
     public Processor getProcessor() {return this.processor;}
 
-    public QueenGame(int nbQueen) {
+    public QueenGame(int nbQueen, int nbTabou) {
         processor = new Processor(nbQueen);
         processor.fillRandom();
-        Tabou tabou = new Tabou(processor, 100, 0);
+        Tabou tabou = new Tabou(processor, 100, nbTabou);
         tabou.algoTabou();
     }
 }
