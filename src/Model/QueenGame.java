@@ -12,7 +12,9 @@ public class QueenGame {
     public QueenGame(int nbQueen, int nbTabou) {
         processor = new Processor(nbQueen);
         processor.fillRandom();
-        Tabou tabou = new Tabou(processor, 100, nbTabou);
-        tabou.algoTabou();
+        //Tabou tabou = new Tabou(processor, 100, nbTabou);
+        //tabou.algoTabou();
+        Recuit recuit = new Recuit(processor,100,10, 10);
+        recuit.algoRecuit();
     }
 }
