@@ -14,8 +14,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private static final int NB_QUEENS = 100;
-    private static final int NB_TABOU = 1000;
-    private static final double SCREEN_WIDTH = 500;
+    private static final int NB_TABOU = 10;
+    private static final double SCREEN_WIDTH = 800;
     private static Processor processor;
     private final double COL_WIDTH = SCREEN_WIDTH / NB_QUEENS;
 
