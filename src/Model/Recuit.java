@@ -45,17 +45,23 @@ public class Recuit extends AlgoRecherche{
                 processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
                 fSuivant = processor.calculateNbConflicts();
                 int deltaF = fSuivant - fCourant;
+                int sauvegarde = fCourant;
+                fCourant = fSuivant;
                 if(deltaF <= 0){
                     if(fSuivant < fMin){
                         fMin = fSuivant;
                         xMin = this.processor.getQueens();
+
                     }
+
                 }else {
                     p = (float) Math.random();
+                    //System.out.println("exp(-deltaF/temperature) = " + Math.exp(-deltaF / temperature) + "/ temperature = " + temperature);
                     if (p <= Math.exp(-deltaF / temperature)) {
                         // On a deja permuté donc on ne fait rien
                     } else {
                         // On avait permuté donc on revient en arriere
+                        fCourant = sauvegarde;
                         processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
                     }
                 }
