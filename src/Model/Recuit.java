@@ -1,18 +1,22 @@
 package Model;
 
+import sun.tracing.ProbeSkeleton;
+
 import java.util.Random;
 
 /**
  * Created by Matthieu on 18/03/2017.
+ * Rcuit simulé
  */
-public class Recuit extends AlgoRecherche{
+class Recuit extends AlgoRecherche{
 
     private final int NB_MAX_N1;
     private final int NB_MAX_N2;
-    private int NB_VOISINS_INIT_TEMPERATURE;
+    private final int NB_VOISINS_INIT_TEMPERATURE;
     private final double PROBABILITE_INITIALE;
     private final double PROBABILITE_FINALE;
-    private final double MU;
+    private double MU;
+    private double TEMPERATURE_INITIAL;
 
 
     // Constructeur générique à réalisé dans la classe mere
@@ -25,15 +29,22 @@ public class Recuit extends AlgoRecherche{
         this.PROBABILITE_FINALE = probabiliteFinale;
 
         this.MU = Math.exp(Math.log(Math.log(PROBABILITE_INITIALE) / Math.log(PROBABILITE_FINALE)) / NB_MAX_N1);
+        this.TEMPERATURE_INITIAL = calculerT0();
         System.out.println("MU = " + MU);
     }
 
-    public void algoRecuit(){
+    public Recuit(Processor processor, int nbMaxN1, int nbMaxN2, double mu, int temperature){
+        this(processor, nbMaxN1, nbMaxN2, 0.0, 0.0);
+        this.TEMPERATURE_INITIAL = temperature;
+        this.MU = mu;
+    }
+
+    void algoRecuit(){
         Random randomGenerator = new Random();
         int nbIteration = 0;
         // x0 c'est le processeur à l'état initial
         int[] xMin = this.processor.getQueens();
-        double temperature = calculerT0();
+        double temperature = this.TEMPERATURE_INITIAL;
         System.out.println("T0 = " + temperature);
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, indice;
@@ -50,7 +61,7 @@ public class Recuit extends AlgoRecherche{
                 if(deltaF <= 0){
                     if(fSuivant < fMin){
                         fMin = fSuivant;
-                        xMin = this.processor.getQueens();
+                        //xMin = this.processor.getQueens();
 
                     }
 
@@ -78,13 +89,12 @@ public class Recuit extends AlgoRecherche{
     // Retourne l'indice d'une permutation aléatoire dans la liste de voisin
     private  int onePermutationAlea() {
         Random randomGenerator = new Random();
-        int i = randomGenerator.nextInt(processor.getNbQueens()); // Entre 1 et nbQueens
-        return i;
+        return randomGenerator.nextInt(processor.getNbQueens()); // Entre 1 et nbQueens
     }
 
     /**
      *
-     * @return
+     * @return temperature
      */
     private double calculerT0() {
         return -calculateDeltaFMax(NB_VOISINS_INIT_TEMPERATURE) / Math.log(PROBABILITE_INITIALE);
@@ -98,7 +108,7 @@ public class Recuit extends AlgoRecherche{
     private int calculateDeltaFMax(int nbItérations) {
         int deltaFMax, fCourant, fSuivant;
         int indice;
-        int deltaF = 0;
+        int deltaF;
         deltaFMax = 0;
         fCourant = processor.calculateNbConflicts();
         for (int i=0; i < nbItérations; i ++) {

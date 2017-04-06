@@ -14,7 +14,8 @@ public class QueenGame {
         processor.fillRandom();
          //Tabou tabou = new Tabou(processor, 200, nbTabou);
          //tabou.algoTabou();
-        Recuit recuit = new Recuit(processor,1000,1000, 0.9999, 0.00001);
+        //Recuit recuit = new Recuit(processor,1000,1000, 0.9999, 0.00001);
+        Recuit recuit = new Recuit(processor, 1000, 100, 0.01, 100000);
         recuit.algoRecuit();
     }
 }

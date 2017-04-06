@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    private static final int NB_QUEENS = 50;
+    private static final int NB_QUEENS = 1000;
     private static final int NB_TABOU = 10;
     private static final double SCREEN_WIDTH = 800;
     private static Processor processor;
