@@ -25,6 +25,13 @@ public class Processor {
         init();
     }
 
+    public Processor(int nbQueens, boolean fillRandom) {
+        this(nbQueens);
+        if(fillRandom){
+            this.fillRandom();
+        }
+    }
+
     /**
      * Fill the array queens with random disposition
      */
