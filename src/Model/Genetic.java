@@ -24,6 +24,10 @@ public class Genetic extends AlgoRecherche {
         this.populationsSelected = new ArrayList<>(this.NB_POPULATION_INITALE);
     }
 
+    public void algoGenetic() {
+
+    }
+
     // Optimisatio utilisé treemap pour éviter d'avoir a réaliser le trie après
     private void initializePopulation() {
         this.populations = new ArrayList<>(this.NB_POPULATION_INITALE);
@@ -60,13 +64,14 @@ public class Genetic extends AlgoRecherche {
 
     private Population getRouletteElement(int x){
         int conflicCumule = 0;
-        // On parcours dans le sens croissant car pllus de chance de prendre les plus grand en premier
+        // On parcours dans le sens croissant de conflit car plus de chance de prendre les plus grand en premier
         for(int i = 0; i < this.NB_POPULATION_INITALE; i--){
             conflicCumule += this.populations.get(i).getNbConflit();
-            // TODO le todo qu'il faut faire
-            // Reflechire à la roulette pour privilégierles éléments qui ont le moins de conflits
+            if (conflicCumule/nbTotalConflict > x) {
+                return this.populations.get(i);
+            }
         }
-        return new Population();
+        return this.populations.get(0);
     }
 
     /*
@@ -75,8 +80,6 @@ public class Genetic extends AlgoRecherche {
     public void sortPopulation(){
         Collections.sort(this.populations, new PopulationComparator());
     }
-
-
 
     private class PopulationComparator implements Comparator<Population>{
         @Override

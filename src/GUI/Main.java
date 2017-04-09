@@ -1,5 +1,6 @@
 package GUI;
 
+import Model.Algorithms;
 import Model.Processor;
 import Model.QueenGame;
 import javafx.application.Application;
@@ -14,10 +15,15 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private static final int NB_QUEENS = 1000;
-    private static final int NB_TABOU = 10;
     private static final double SCREEN_WIDTH = 800;
     private static Processor processor;
     private final double COL_WIDTH = SCREEN_WIDTH / NB_QUEENS;
+
+    public static void main(String[] args) {
+        QueenGame queenGame = new QueenGame(NB_QUEENS, Algorithms.TABOO);
+        processor = queenGame.getProcessor();
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -50,10 +56,4 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-
-    public static void main(String[] args) {
-        QueenGame queenGame = new QueenGame(NB_QUEENS, NB_TABOU);
-        processor = queenGame.getProcessor();
-        launch(args);
-    }
 }
