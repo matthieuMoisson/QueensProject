@@ -96,6 +96,10 @@ public class Processor {
 
     @Override
     public String toString() {
+        return "Nb Queens: " + this.nbQueens;
+    }
+
+    public String display() {
         StringBuilder stb = new StringBuilder();
         for (int i = 0; i < nbQueens; i ++) {
             stb.append(queens[i]);

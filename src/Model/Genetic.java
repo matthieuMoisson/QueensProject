@@ -24,8 +24,9 @@ public class Genetic extends AlgoRecherche {
         this.populationsSelected = new ArrayList<>(this.NB_POPULATION_INITALE);
     }
 
-    public void algoGenetic() {
-
+    @Override
+    protected void launch() {
+        super.launch();
     }
 
     // Optimisatio utilisé treemap pour éviter d'avoir a réaliser le trie après
@@ -92,5 +93,12 @@ public class Genetic extends AlgoRecherche {
                 return -1;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        String result = processor.toString() + "\n";
+        result += "Genetic - [taillePopulationElitiste: " + NB_ELITISTE +"] - [taillePopulationInitiale: " + NB_POPULATION_INITALE + "]";
+        return result;
     }
 }

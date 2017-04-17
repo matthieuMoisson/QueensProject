@@ -23,8 +23,11 @@ public class Tabou extends AlgoRecherche{
         this.initListeTabou();
     }
 
-    // Fonction tabou qui prend le processor (donc le tableau de dame actuel et calcule tout ce que tu veut
-    public void algoTabou() {
+    /**
+     * Fonction tabou qui prend le processor (donc le tableau de dame actuel et calcule tout ce que tu veut
+     */
+    @Override
+    protected void launch() {
         int[] xMin = this.processor.getQueens();
         this.initListeTabou();
         int fMin = this.processor.calculateNbConflicts();
@@ -78,6 +81,13 @@ public class Tabou extends AlgoRecherche{
 
     private void initListeTabou(){
         this.listeTabou = new ArrayList<>(nbTabou);
+    }
+
+    @Override
+    public String toString() {
+        String result = processor.toString() + "\n";
+        result += "Taboo - [tailleListe: " + this.nbTabou +"] - [nbIterationsMax: " + this.nbMaxIteration + "]";
+        return result;
     }
 
 }

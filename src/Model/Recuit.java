@@ -39,7 +39,8 @@ class Recuit extends AlgoRecherche{
         this.MU = mu;
     }
 
-    void algoRecuit(){
+    @Override
+    protected void launch(){
         Random randomGenerator = new Random();
         int nbIteration = 0;
         // x0 c'est le processeur à l'état initial
@@ -123,6 +124,14 @@ class Recuit extends AlgoRecherche{
         }
         System.out.println("FMAX = " + deltaFMax);
         return deltaFMax;
+    }
+
+    @Override
+    public String toString() {
+        String result = processor.toString() + "\n";
+        result += "Recuit - [N1: " + this.NB_MAX_N1 +"] - [N2: " + this.NB_MAX_N2 + "]" + "[MU: " + MU + "] - " +
+                "[TEMP_INIT: " + TEMPERATURE_INITIAL + "]";
+        return result;
     }
 
 }

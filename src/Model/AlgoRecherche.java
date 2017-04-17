@@ -1,5 +1,7 @@
 package Model;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +34,25 @@ public class AlgoRecherche {
             }
         }
     }
+
+    /**
+     * Run the algorithm and return the time consumed
+     * @return long : the number of milliseconds elapsed
+     */
+    public long run() {
+        long startTime = System.currentTimeMillis();
+
+        launch();
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        return elapsedTime;
+    }
+
+    /**
+     * Launch the algorithm
+     */
+    protected void launch(){throw new NotImplementedException();};
 
 
 }
