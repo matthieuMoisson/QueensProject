@@ -30,17 +30,19 @@ class Recuit extends AlgoRecherche{
 
         this.MU = Math.exp(Math.log(Math.log(PROBABILITE_INITIALE) / Math.log(PROBABILITE_FINALE)) / NB_MAX_N1);
         this.TEMPERATURE_INITIAL = calculerT0();
-        System.out.println("MU = " + MU);
     }
 
-    public Recuit(Processor processor, int nbMaxN1, int nbMaxN2, double mu, int temperature){
+    public Recuit(Processor processor, int nbMaxN1, int nbMaxN2, double mu){
         this(processor, nbMaxN1, nbMaxN2, 0.0, 0.0);
-        this.TEMPERATURE_INITIAL = temperature;
+        //this.TEMPERATURE_INITIAL = temperature;
+        this.TEMPERATURE_INITIAL = this.processor.calculateNbConflicts() * 2;
         this.MU = mu;
+        System.out.println("MU = " + MU);
     }
 
     @Override
     protected void launch(){
+        boolean fini = false;
         Random randomGenerator = new Random();
         int nbIteration = 0;
         // x0 c'est le processeur à l'état initial
@@ -53,31 +55,37 @@ class Recuit extends AlgoRecherche{
         float p;
         for(int k = 0; k<NB_MAX_N1; k++){
             for(int l = 1; l < NB_MAX_N2; l++){
-                indice = onePermutationAlea();
-                processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
-                fSuivant = processor.calculateNbConflicts();
-                int deltaF = fSuivant - fCourant;
-                int sauvegarde = fCourant;
-                fCourant = fSuivant;
-                if(deltaF <= 0){
-                    if(fSuivant < fMin){
-                        fMin = fSuivant;
-                        //xMin = this.processor.getQueens();
-
-                    }
+                if(fini){
 
                 }else {
-                    p = (float) Math.random();
-                    //System.out.println("exp(-deltaF/temperature) = " + Math.exp(-deltaF / temperature) + "/ temperature = " + temperature);
-                    if (p <= Math.exp(-deltaF / temperature)) {
-                        // On a deja permuté donc on ne fait rien
+                    nbIteration++;
+                    indice = onePermutationAlea();
+                    processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
+                    fSuivant = processor.calculateNbConflicts();
+                    int deltaF = fSuivant - fCourant;
+                    int sauvegarde = fCourant;
+                    fCourant = fSuivant;
+                    if (deltaF <= 0) {
+                        if (fSuivant < fMin) {
+                            fMin = fSuivant;
+                            //xMin = this.processor.getQueens();
+                            if(fSuivant == 0){
+                                fini = true;
+                            }
+                        }
+
                     } else {
-                        // On avait permuté donc on revient en arriere
-                        fCourant = sauvegarde;
-                        processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
+                        p = (float) Math.random();
+                        //System.out.println("exp(-deltaF/temperature) = " + Math.exp(-deltaF / temperature) + "/ temperature = " + temperature);
+                        if (p <= Math.exp(-deltaF / temperature)) {
+                            // On a deja permuté donc on ne fait rien
+                        } else {
+                            // On avait permuté donc on revient en arriere
+                            fCourant = sauvegarde;
+                            processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
+                        }
                     }
                 }
-                nbIteration++;
             }
             // A modifier
             temperature *= MU;
@@ -85,6 +93,7 @@ class Recuit extends AlgoRecherche{
         // System.out.println("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts());
         System.out.println("Nb de conflit de la meilleure solution : " + fMin);
         System.out.println("Nombre d'itération : " + nbIteration);
+        System.out.println("Temperature aprés itération : " + temperature);
     }
 
     // Retourne l'indice d'une permutation aléatoire dans la liste de voisin

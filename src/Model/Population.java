@@ -7,11 +7,10 @@ package Model;
 public class Population {
     private int nbConflit;
     private Processor processor;
-    private int nbConflictCumule = 0;
 
 
-    public Population() {
-        this.processor = new Processor(this.processor.getNbQueens(), true);
+    public Population(int nbQueens) {
+        this.processor = new Processor(nbQueens, true);
     }
 
     public int getNbConflit() {
@@ -24,9 +23,5 @@ public class Population {
 
     public Processor getProcessor() {
         return processor;
-    }
-
-    public void setProcessor(Processor processor) {
-        this.processor = processor;
     }
 }

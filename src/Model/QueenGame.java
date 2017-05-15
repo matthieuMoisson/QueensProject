@@ -8,8 +8,8 @@ public class QueenGame {
 
     // ---------------------- Parameters
     private static final int NB_TABOU = 10;
-    private static final int NB_QUEEN = 1000;
-    private static final Algorithms ALGO = Algorithms.RECUIT;
+    private static final int NB_QUEEN = 10;
+    private static final Algorithms ALGO = Algorithms.GENETIC;
     // ---------------------- End Parameters
 
 
@@ -24,7 +24,7 @@ public class QueenGame {
 
     public QueenGame() {
         processor = new Processor(NB_QUEEN);
-//        launchAlgo(processor, ALGO);
+        launchAlgo(processor, ALGO);
     }
     // ---------------------- End Constructors
 
@@ -40,10 +40,12 @@ public class QueenGame {
                 algoRecherche = new Tabou(processor, 200, NB_TABOU);
                 break;
             case RECUIT:
-                algoRecherche = new Recuit(processor, 1000, 100, 0.01, 100000);
+                // Pour 100 dame les parametre suivant sont pas mal nb1 1000, nb2 100 mu 0.01 ttemp 10000
+                // Pour 500 reine nb1 10000, nb2 10, mu 0.01, temp 100000
+                algoRecherche = new Recuit(processor, 10000, 100, 0.05);
                 break;
             case GENETIC:
-                algoRecherche = new Genetic(processor, 100, 10);
+                algoRecherche = new Genetic(processor, 10, 5);
                 break;
             default:
                 algoRecherche = new Recuit(processor,1000,1000, 0.9999, 0.00001);
@@ -51,16 +53,24 @@ public class QueenGame {
         }
 
         long elapsedTime = algoRecherche.run();
-        System.out.println(algo + " took " + elapsedTime + " ms");
+        long min, sec, ms;
+        ms = elapsedTime%1000;
+        sec = (elapsedTime/1000)%60;
+        min = elapsedTime/60000;
+        System.out.println("La durée de l'algo " + algo + " est de : " + min + " min, " + sec + " s, " + ms + " ms");
     }
 
     private void launchAlgo(AlgoRecherche algoRecherche) {
         long elapsedTime = algoRecherche.run();
-        System.out.println(algoRecherche + " took " + elapsedTime + " ms");
+        long min, sec, ms;
+        ms = elapsedTime%1000;
+        sec = elapsedTime/1000;
+        min = elapsedTime/60000;
+        System.out.println("La durée de l'algo " + algoRecherche + " est de : " + min + " min, " + sec + " s, " + ms + " ms");
     }
 
     public static void main(String[] args) {
         QueenGame qg = new QueenGame();
-        qg.launchAlgo(new Tabou(new Processor(100), 200, NB_TABOU));
+        //qg.launchAlgo(new Tabou(new Processor(NB_QUEEN), 200, NB_TABOU));
     }
 }

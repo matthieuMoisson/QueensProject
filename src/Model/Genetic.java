@@ -25,8 +25,15 @@ public class Genetic extends AlgoRecherche {
     }
 
     @Override
-    protected void launch() {
-        super.launch();
+    protected void launch(){
+        System.out.println("je passe par la");
+        boolean ended = false;
+        this.initializePopulation();
+        while(!ended){
+            this.evaluatePopulation();
+            this.setNewPopulation();
+            System.out.printf("je passe par la");
+        }
     }
 
     // Optimisatio utilisé treemap pour éviter d'avoir a réaliser le trie après
@@ -34,7 +41,7 @@ public class Genetic extends AlgoRecherche {
         this.populations = new ArrayList<>(this.NB_POPULATION_INITALE);
         // Initliaser la populations initial
         for(int i = 0; i < this.NB_POPULATION_INITALE; i++){
-            this.populations.add(new Population());
+            this.populations.add(new Population(processor.getNbQueens()));
         }
     }
 
@@ -43,11 +50,13 @@ public class Genetic extends AlgoRecherche {
         for(int i = 0; i < this.NB_POPULATION_INITALE; i++){
             this.nbTotalConflict += this.populations.get(i).calculateNbConflit();
         }
+        this.sortPopulation();
     }
 
     private void setNewPopulation(){
         // Peut ramer, a reprendre si c'est un peut long, à ameliorer
         // Elitiste
+
         this.populationsSelected = new ArrayList<>(this.NB_POPULATION_INITALE);
         for(int i = 0; i < this.NB_ELITISTE; i++){
             this.populationsSelected.add(this.populations.get(i));
@@ -58,21 +67,29 @@ public class Genetic extends AlgoRecherche {
         Random randomGenerator = new Random();
         int x;
         for(int i = 0; i < this.NB_POPULATION_INITALE - this.NB_ELITISTE; i++){
-            x = randomGenerator.nextInt(this.nbTotalConflict);
+            x = randomGenerator.nextInt(this.nbTotalConflict*(this.NB_POPULATION_INITALE-1));
             this.populationsSelected.add(this.getRouletteElement(x));
         }
     }
 
+    private void setNewPopulationCroisement(){
+
+    }
+
     private Population getRouletteElement(int x){
         int conflicCumule = 0;
-        // On parcours dans le sens croissant de conflit car plus de chance de prendre les plus grand en premier
-        for(int i = 0; i < this.NB_POPULATION_INITALE; i--){
-            conflicCumule += this.populations.get(i).getNbConflit();
-            if (conflicCumule/nbTotalConflict > x) {
-                return this.populations.get(i);
+        // On parcours dans le sens croissant car plus de chance de prendre les plus grand en premier
+        int i = 0;
+        while(conflicCumule<x){
+            conflicCumule += (this.nbTotalConflict - this.populations.get(i).getNbConflit());
+            // TODO le todo qu'il faut faire
+            if(conflicCumule>x){
+                // On garde l'element i
+                this.populationsSelected.add(this.populations.get(i));
             }
+            i++;
         }
-        return this.populations.get(0);
+        return new Population(processor.getNbQueens());
     }
 
     /*
@@ -81,6 +98,8 @@ public class Genetic extends AlgoRecherche {
     public void sortPopulation(){
         Collections.sort(this.populations, new PopulationComparator());
     }
+
+
 
     private class PopulationComparator implements Comparator<Population>{
         @Override
@@ -93,12 +112,5 @@ public class Genetic extends AlgoRecherche {
                 return -1;
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        String result = processor.toString() + "\n";
-        result += "Genetic - [taillePopulationElitiste: " + NB_ELITISTE +"] - [taillePopulationInitiale: " + NB_POPULATION_INITALE + "]";
-        return result;
     }
 }
