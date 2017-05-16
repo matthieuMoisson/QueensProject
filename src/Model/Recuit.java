@@ -1,91 +1,89 @@
 package Model;
 
-import sun.tracing.ProbeSkeleton;
-
 import java.util.Random;
 
 /**
  * Created by Matthieu on 18/03/2017.
  * Rcuit simulé
  */
-class Recuit extends AlgoRecherche{
+class Recuit extends AlgoRecherche {
 
-    private final int NB_MAX_N1;
-    private final int NB_MAX_N2;
-    private final int NB_VOISINS_INIT_TEMPERATURE;
-    private final double PROBABILITE_INITIALE;
-    private final double PROBABILITE_FINALE;
+    private final int nbMaxN1;
+    private final int nbMaxN2;
+    private final int nbVoisinsInitTemperature;
+    private final double probabiliteInitiale;
+    private final double probabiliteFinale;
     private double MU;
-    private double TEMPERATURE_INITIAL;
+    private double temperatureInitial;
 
 
     // Constructeur générique à réalisé dans la classe mere
     public Recuit(Processor processor, int nbMaxN1, int nbMaxN2, double probabiliteInitiale, double probabiliteFinale) {
         super(processor);
-        this.NB_MAX_N1 = nbMaxN1;
-        this.NB_MAX_N2 = nbMaxN2;
-        this.PROBABILITE_INITIALE = probabiliteInitiale;
-        this.NB_VOISINS_INIT_TEMPERATURE = 10;
-        this.PROBABILITE_FINALE = probabiliteFinale;
+        this.nbMaxN1 = nbMaxN1;
+        this.nbMaxN2 = nbMaxN2;
+        this.probabiliteInitiale = probabiliteInitiale;
+        this.nbVoisinsInitTemperature = 10;
+        this.probabiliteFinale = probabiliteFinale;
 
-        this.MU = Math.exp(Math.log(Math.log(PROBABILITE_INITIALE) / Math.log(PROBABILITE_FINALE)) / NB_MAX_N1);
-        this.TEMPERATURE_INITIAL = calculerT0();
+        this.MU = Math.exp(Math.log(Math.log(this.probabiliteInitiale) / Math.log(this.probabiliteFinale)) / this.nbMaxN1);
+        this.temperatureInitial = calculerT0();
     }
 
-    public Recuit(Processor processor, int nbMaxN1, int nbMaxN2, double mu){
+    public Recuit(Processor processor, int nbMaxN1, int nbMaxN2, double mu) {
         this(processor, nbMaxN1, nbMaxN2, 0.0, 0.0);
-        //this.TEMPERATURE_INITIAL = temperature;
-        this.TEMPERATURE_INITIAL = this.processor.calculateNbConflicts() * 2;
+        //this.temperatureInitial = temperature;
+        this.temperatureInitial = this.processor.calculateNbConflicts() * 2;
         this.MU = mu;
         System.out.println("MU = " + MU);
     }
 
     @Override
-    protected void launch(){
+    protected void launch() {
         boolean fini = false;
         Random randomGenerator = new Random();
         int nbIteration = 0;
         // x0 c'est le processeur à l'état initial
         int[] xMin = this.processor.getQueens();
-        double temperature = this.TEMPERATURE_INITIAL;
+        double temperature = this.temperatureInitial;
         System.out.println("T0 = " + temperature);
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, indice;
         System.out.println("Nb de conflit de la solution initial : " + fMin);
         float p;
-        for(int k = 0; k<NB_MAX_N1; k++){
-            for(int l = 1; l < NB_MAX_N2; l++){
-                if(fini){
 
-                }else {
-                    nbIteration++;
-                    indice = onePermutationAlea();
-                    processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
-                    fSuivant = processor.calculateNbConflicts();
-                    int deltaF = fSuivant - fCourant;
-                    int sauvegarde = fCourant;
-                    fCourant = fSuivant;
-                    if (deltaF <= 0) {
-                        if (fSuivant < fMin) {
-                            fMin = fSuivant;
-                            //xMin = this.processor.getQueens();
-                            if(fSuivant == 0){
-                                fini = true;
-                            }
-                        }
+        outerloop:
+        for (int k = 0; k < nbMaxN1; k++) {
+            for (int l = 1; l < nbMaxN2; l++) {
 
-                    } else {
-                        p = (float) Math.random();
-                        //System.out.println("exp(-deltaF/temperature) = " + Math.exp(-deltaF / temperature) + "/ temperature = " + temperature);
-                        if (p <= Math.exp(-deltaF / temperature)) {
-                            // On a deja permuté donc on ne fait rien
-                        } else {
-                            // On avait permuté donc on revient en arriere
-                            fCourant = sauvegarde;
-                            processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
+                nbIteration++;
+                indice = onePermutationAlea();
+                processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
+                fSuivant = processor.calculateNbConflicts();
+                int deltaF = fSuivant - fCourant;
+                int sauvegarde = fCourant;
+                fCourant = fSuivant;
+                if (deltaF <= 0) {
+                    if (fSuivant < fMin) {
+                        fMin = fSuivant;
+                        //xMin = this.processor.getQueens();
+                        if (fSuivant == 0) {
+                            break outerloop;
                         }
                     }
+
+                } else {
+                    p = (float) Math.random();
+                    //System.out.println("exp(-deltaF/temperature) = " + Math.exp(-deltaF / temperature) + "/ temperature = " + temperature);
+                    if (p <= Math.exp(-deltaF / temperature)) {
+                        // On a deja permuté donc on ne fait rien
+                    } else {
+                        // On avait permuté donc on revient en arriere
+                        fCourant = sauvegarde;
+                        processor.permute(this.listeVoisins.get(indice)[0], this.listeVoisins.get(indice)[1]);
+                    }
                 }
+
             }
             // A modifier
             temperature *= MU;
@@ -97,21 +95,21 @@ class Recuit extends AlgoRecherche{
     }
 
     // Retourne l'indice d'une permutation aléatoire dans la liste de voisin
-    private  int onePermutationAlea() {
+    private int onePermutationAlea() {
         Random randomGenerator = new Random();
         return randomGenerator.nextInt(processor.getNbQueens()); // Entre 1 et nbQueens
     }
 
     /**
-     *
      * @return temperature
      */
     private double calculerT0() {
-        return -calculateDeltaFMax(NB_VOISINS_INIT_TEMPERATURE) / Math.log(PROBABILITE_INITIALE);
+        return -calculateDeltaFMax(nbVoisinsInitTemperature) / Math.log(probabiliteInitiale);
     }
 
     /**
      * Calcule FMax pour permettre de calculer la température initiale
+     *
      * @param nbItérations
      * @return
      */
@@ -121,7 +119,7 @@ class Recuit extends AlgoRecherche{
         int deltaF;
         deltaFMax = 0;
         fCourant = processor.calculateNbConflicts();
-        for (int i=0; i < nbItérations; i ++) {
+        for (int i = 0; i < nbItérations; i++) {
             indice = onePermutationAlea();
             processor.permute(listeVoisins.get(indice)[0], listeVoisins.get(indice)[1]);
             fSuivant = processor.calculateNbConflicts();
@@ -138,8 +136,8 @@ class Recuit extends AlgoRecherche{
     @Override
     public String toString() {
         String result = processor.toString() + "\n";
-        result += "Recuit - [N1: " + this.NB_MAX_N1 +"] - [N2: " + this.NB_MAX_N2 + "]" + "[MU: " + MU + "] - " +
-                "[TEMP_INIT: " + TEMPERATURE_INITIAL + "]";
+        result += "Recuit - [N1: " + this.nbMaxN1 + "] - [N2: " + this.nbMaxN2 + "]" + "[MU: " + MU + "] - " +
+                "[TEMP_INIT: " + temperatureInitial + "]";
         return result;
     }
 

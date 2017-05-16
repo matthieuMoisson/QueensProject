@@ -21,7 +21,6 @@ public class AlgoRecherche {
     private void initListeVoisins(){
         this.listeVoisins = new ArrayList<int[]>();
         int nbQueens = this.processor.getNbQueens();
-        int nbPermutation = ((nbQueens-1)*nbQueens) /2;
         // Listes de tout les voisins, à gauche l'indice du voisins, à droite la valeur de la colonne
         // System.out.println("Initiale : " + toString());
         int[] voisin = new int[2];

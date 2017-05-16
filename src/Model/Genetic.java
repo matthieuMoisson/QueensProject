@@ -1,5 +1,7 @@
 package Model;
 
+import com.sun.org.apache.bcel.internal.generic.POP;
+
 import java.util.*;
 
 /**
@@ -8,7 +10,8 @@ import java.util.*;
  */
 public class Genetic extends AlgoRecherche {
 
-    private final int NB_POPULATION_INITALE;
+    public static final int RATIO_MUTATION = 2;
+    private final int nbPopulationInitale;
     private final int NB_ELITISTE;
 
     List<Population> populations;
@@ -18,53 +21,60 @@ public class Genetic extends AlgoRecherche {
 
     public Genetic(Processor processor, int nbPopulationInitial, int nbElististe) {
         super(processor);
-        this.NB_POPULATION_INITALE = nbPopulationInitial;
+        this.nbPopulationInitale = nbPopulationInitial;
         this.initializePopulation();
         this.NB_ELITISTE = nbElististe;
-        this.populationsSelected = new ArrayList<>(this.NB_POPULATION_INITALE);
+        this.populationsSelected = new ArrayList<>(this.nbPopulationInitale);
     }
 
     @Override
     protected void launch(){
-        System.out.println("je passe par la");
-        boolean ended = false;
         this.initializePopulation();
-        /*
-        while(this.evaluatePopulation()){
+        while(!this.evaluatePopulation()){
             this.setNewPopulation();
-            //System.out.printf("je passe par la");
+            this.setNewPopulationCroisement();
+            this.mutate(this.populationsSelected.size() / RATIO_MUTATION);
+//            this.populations = this.populationsSelected;
+            System.out.println(nbTotalConflict);
         }
-        */
     }
+
 
     // Optimisatio utilisé treemap pour éviter d'avoir a réaliser le trie après
     private void initializePopulation() {
-        this.populations = new ArrayList<>(this.NB_POPULATION_INITALE);
+        this.populations = new ArrayList<>(this.nbPopulationInitale);
         // Initliaser la populations initial
-        for(int i = 0; i < this.NB_POPULATION_INITALE; i++){
+        for(int i = 0; i < this.nbPopulationInitale; i++){
             this.populations.add(new Population(processor.getNbQueens()));
         }
     }
 
+    /**
+     * Evalue et trie la population
+     * @return true si une solution a été trouvée, faux sinon
+     */
     private boolean evaluatePopulation(){
-        boolean oneIsBest = false;
         this.nbTotalConflict = 0;
-        for(int i = 0; i < this.NB_POPULATION_INITALE; i++){
+        for(int i = 0; i < this.nbPopulationInitale; i++){
             int nbCOnflict = this.populations.get(i).calculateNbConflit();
             if(nbCOnflict == 0){
-                oneIsBest = true;
+                return true;
             }
             this.nbTotalConflict += nbCOnflict;
         }
         this.sortPopulation();
-        return oneIsBest;
+        return false;
     }
 
+    /**
+     * Sélection
+     * Roulette
+     */
     private void setNewPopulation(){
         // Peut ramer, a reprendre si c'est un peut long, à ameliorer
         // Elitiste
 
-        this.populationsSelected = new ArrayList<>(this.NB_POPULATION_INITALE);
+        this.populationsSelected = new ArrayList<>(this.nbPopulationInitale);
         for(int i = 0; i < this.NB_ELITISTE; i++){
             this.populationsSelected.add(this.populations.get(i));
         }
@@ -73,17 +83,58 @@ public class Genetic extends AlgoRecherche {
         // Roulette
         Random randomGenerator = new Random();
         int x;
-        for(int i = 0; i < this.NB_POPULATION_INITALE - this.NB_ELITISTE; i++){
-            x = randomGenerator.nextInt(this.nbTotalConflict*(this.NB_POPULATION_INITALE-1));
-            this.populationsSelected.add(this.getRouletteElement(x));
+        for(int i = 0; i < this.nbPopulationInitale - this.NB_ELITISTE; i++){
+            x = randomGenerator.nextInt(this.nbTotalConflict*(this.nbPopulationInitale -1));
+            this.addElementsWithRoulette(x);
         }
     }
 
+    /**
+     * Croisement
+     */
     private void setNewPopulationCroisement(){
+        int n = this.populationsSelected.size();
+        int m = n / RATIO_MUTATION;
+
+        Random randomGenerator = new Random();
+
+        for (int i = 0; i < m; i++) {
+            int index1 = randomGenerator.nextInt(n);
+            int index2 = randomGenerator.nextInt(n);
+            int indicePermutation = randomGenerator.nextInt(this.processor.getNbQueens());
+            List<Population> tempPopulation = merge(populationsSelected.get(index1), populationsSelected.get(index2), indicePermutation);
+            this.populationsSelected.set(index1, tempPopulation.get(0));
+            this.populationsSelected.set(index2, tempPopulation.get(1));
+        }
+    }
+
+    private List<Population> merge(Population population1, Population population2, int indiceCoupe) {
+        List<Population> result = new ArrayList<>(4);
+        result.add(population1);
+        result.add(population2);
+        result.add(new Population(population1.getProcessor(), population2.getProcessor(), indiceCoupe));
+        result.add(new Population(population2.getProcessor(), population1.getProcessor(), indiceCoupe));
+        Collections.sort(result, new PopulationComparator());
+        return result;
+    }
+
+    /**
+     * nbPermutation claque sur selectedPopulation
+     * @param nbPermutation
+     */
+    private void mutate(int nbPermutation) {
+        int n = this.populationsSelected.size();
+
+        for (int i = 0; i < nbPermutation; i++) {
+            int indicePermutation = RandomCustom.getInt(n);
+            this.populationsSelected.get(indicePermutation).getProcessor().permuteRandom();
+            this.populationsSelected.get(indicePermutation).calculateNbConflit();
+        }
 
     }
 
-    private Population getRouletteElement(int x){
+
+    private void addElementsWithRoulette(int x){
         int conflicCumule = 0;
         // On parcours dans le sens croissant car plus de chance de prendre les plus grand en premier
         int i = 0;
@@ -95,7 +146,6 @@ public class Genetic extends AlgoRecherche {
             }
             i++;
         }
-        return new Population(processor.getNbQueens());
     }
 
     /*

@@ -45,7 +45,7 @@ public class QueenGame {
                 algoRecherche = new Recuit(processor, 10000, 100, 0.05);
                 break;
             case GENETIC:
-                algoRecherche = new Genetic(processor, 10, 5);
+                algoRecherche = new Genetic(processor, 100, 10);
                 break;
             default:
                 algoRecherche = new Recuit(processor,1000,1000, 0.9999, 0.00001);
@@ -58,15 +58,6 @@ public class QueenGame {
         sec = (elapsedTime/1000)%60;
         min = elapsedTime/60000;
         System.out.println("La durée de l'algo " + algo + " est de : " + min + " min, " + sec + " s, " + ms + " ms");
-    }
-
-    private void launchAlgo(AlgoRecherche algoRecherche) {
-        long elapsedTime = algoRecherche.run();
-        long min, sec, ms;
-        ms = elapsedTime%1000;
-        sec = elapsedTime/1000;
-        min = elapsedTime/60000;
-        System.out.println("La durée de l'algo " + algoRecherche + " est de : " + min + " min, " + sec + " s, " + ms + " ms");
     }
 
     public static void main(String[] args) {

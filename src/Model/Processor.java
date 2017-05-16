@@ -32,6 +32,10 @@ public class Processor {
         }
     }
 
+    public void setQueenPosition(int index, int value) {
+        queens[index] = value;
+    }
+
     /**
      * Fill the array queens with random disposition
      */
@@ -88,7 +92,7 @@ public class Processor {
         int currentValue = queens[colIndex];
         int nextValue = queens[colIndex + ecart];
 
-        if (currentValue + ecart == nextValue || currentValue - ecart == nextValue) {
+        if (currentValue + ecart == nextValue || currentValue - ecart == nextValue || currentValue == nextValue) {
             return true;
         }
         return false;
@@ -109,4 +113,7 @@ public class Processor {
         return stb.toString();
     }
 
+    public void permuteRandom() {
+        this.permute(RandomCustom.getInt(nbQueens), RandomCustom.getInt(nbQueens));
+    }
 }
