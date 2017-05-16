@@ -29,11 +29,12 @@ public class Genetic extends AlgoRecherche {
         System.out.println("je passe par la");
         boolean ended = false;
         this.initializePopulation();
-        while(!ended){
-            this.evaluatePopulation();
+        /*
+        while(this.evaluatePopulation()){
             this.setNewPopulation();
-            System.out.printf("je passe par la");
+            //System.out.printf("je passe par la");
         }
+        */
     }
 
     // Optimisatio utilisé treemap pour éviter d'avoir a réaliser le trie après
@@ -45,12 +46,18 @@ public class Genetic extends AlgoRecherche {
         }
     }
 
-    private void evaluatePopulation(){
+    private boolean evaluatePopulation(){
+        boolean oneIsBest = false;
         this.nbTotalConflict = 0;
         for(int i = 0; i < this.NB_POPULATION_INITALE; i++){
-            this.nbTotalConflict += this.populations.get(i).calculateNbConflit();
+            int nbCOnflict = this.populations.get(i).calculateNbConflit();
+            if(nbCOnflict == 0){
+                oneIsBest = true;
+            }
+            this.nbTotalConflict += nbCOnflict;
         }
         this.sortPopulation();
+        return oneIsBest;
     }
 
     private void setNewPopulation(){
@@ -82,7 +89,6 @@ public class Genetic extends AlgoRecherche {
         int i = 0;
         while(conflicCumule<x){
             conflicCumule += (this.nbTotalConflict - this.populations.get(i).getNbConflit());
-            // TODO le todo qu'il faut faire
             if(conflicCumule>x){
                 // On garde l'element i
                 this.populationsSelected.add(this.populations.get(i));
@@ -98,8 +104,6 @@ public class Genetic extends AlgoRecherche {
     public void sortPopulation(){
         Collections.sort(this.populations, new PopulationComparator());
     }
-
-
 
     private class PopulationComparator implements Comparator<Population>{
         @Override
