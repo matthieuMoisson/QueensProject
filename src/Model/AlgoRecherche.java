@@ -22,7 +22,6 @@ public class AlgoRecherche {
         this.listeVoisins = new ArrayList<int[]>();
         int nbQueens = this.processor.getNbQueens();
         // Listes de tout les voisins, à gauche l'indice du voisins, à droite la valeur de la colonne
-        // System.out.println("Initiale : " + toString());
         int[] voisin = new int[2];
         for(int firstCol = 0; firstCol < nbQueens-1; firstCol ++) {
             for (int secondCol = firstCol + 1; secondCol < nbQueens; secondCol++) {

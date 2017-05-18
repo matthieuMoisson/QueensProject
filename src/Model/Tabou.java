@@ -1,5 +1,7 @@
 package Model;
 
+import logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class Tabou extends AlgoRecherche{
         this.initListeTabou();
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, i = 0, indice = this.getBestNeighbors();
-        System.out.println("Nb de conflit de la solution initial : " + fMin);
+        Logger.log("Nb de conflit de la solution initial : " + fMin, 1);
         do {
             if (listeVoisins.size() >= 0) {
                 indice = this.getBestNeighbors();
@@ -54,9 +56,9 @@ public class Tabou extends AlgoRecherche{
             i++;
 
         } while (i < nbMaxIteration && listeVoisins.size() > 0 && fSuivant != 0);
-        System.out.println("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts());
-        System.out.println("Nombe d'itération : " + i);
-        System.out.println("Taille de la liste tabou : " + this.listeTabou.size());
+        Logger.log("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts(), 1);
+        Logger.log("Nombe d'itération : " + i, 1);
+        Logger.log("Taille de la liste tabou : " + this.listeTabou.size(), 1);
     }
 
     /**

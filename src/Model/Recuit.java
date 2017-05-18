@@ -1,5 +1,7 @@
 package Model;
 
+import logger.Logger;
+
 import java.util.Random;
 
 /**
@@ -35,7 +37,7 @@ class Recuit extends AlgoRecherche {
         //this.temperatureInitial = temperature;
         this.temperatureInitial = this.processor.calculateNbConflicts() * 2;
         this.MU = mu;
-        System.out.println("MU = " + MU);
+        Logger.log("MU = " + MU, 1);
     }
 
     @Override
@@ -46,10 +48,10 @@ class Recuit extends AlgoRecherche {
         // x0 c'est le processeur à l'état initial
         int[] xMin = this.processor.getQueens();
         double temperature = this.temperatureInitial;
-        System.out.println("T0 = " + temperature);
+        Logger.log(("T0 = " + temperature), 1);
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, indice;
-        System.out.println("Nb de conflit de la solution initial : " + fMin);
+        Logger.log("Nb de conflit de la solution initial : " + fMin, 1);
         float p;
 
         outerloop:
@@ -89,9 +91,9 @@ class Recuit extends AlgoRecherche {
             temperature *= MU;
         }
         // System.out.println("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts());
-        System.out.println("Nb de conflit de la meilleure solution : " + fMin);
-        System.out.println("Nombre d'itération : " + nbIteration);
-        System.out.println("Temperature aprés itération : " + temperature);
+        Logger.log("Nb de conflit de la meilleure solution : " + fMin, 1);
+        Logger.log("Nombre d'itération : " + nbIteration);
+        Logger.log("Temperature aprés itération : " + temperature);
     }
 
     // Retourne l'indice d'une permutation aléatoire dans la liste de voisin
@@ -129,7 +131,7 @@ class Recuit extends AlgoRecherche {
             }
             processor.permute(listeVoisins.get(indice)[0], listeVoisins.get(indice)[1]);
         }
-        System.out.println("FMAX = " + deltaFMax);
+        Logger.log("FMAX = " + deltaFMax, 1);
         return deltaFMax;
     }
 

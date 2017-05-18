@@ -1,6 +1,7 @@
 package Model;
 
 import com.sun.org.apache.bcel.internal.generic.POP;
+import logger.Logger;
 
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class Genetic extends AlgoRecherche {
             this.setNewPopulationCroisement();
             this.mutate(this.populationsSelected.size() / RATIO_MUTATION);
 //            this.populations = this.populationsSelected;
-            System.out.println(nbTotalConflict);
+            Logger.log(nbTotalConflict + "", 1);
         }
     }
 
