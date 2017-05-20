@@ -34,8 +34,6 @@ public class QueenGame {
 
     /**
      * Launcher
-     * @param processor
-     * @param algo
      */
     private void launchAlgo(Processor processor, Algorithms algo) {
         AlgoRecherche algoRecherche;
@@ -49,7 +47,7 @@ public class QueenGame {
                 algoRecherche = new Recuit(processor, 10000, 100, 0.05);
                 break;
             case GENETIC:
-                algoRecherche = new Genetic(processor, 100, 10);
+                algoRecherche = new Genetic(processor, 10, 0);
                 break;
             default:
                 algoRecherche = new Recuit(processor,1000,1000, 0.9999, 0.00001);

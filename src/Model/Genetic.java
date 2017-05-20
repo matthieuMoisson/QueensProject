@@ -1,8 +1,5 @@
 package Model;
 
-import com.sun.org.apache.bcel.internal.generic.POP;
-import logger.Logger;
-
 import java.util.*;
 
 /**
@@ -11,60 +8,73 @@ import java.util.*;
  */
 public class Genetic extends AlgoRecherche {
 
-    public static final int RATIO_MUTATION = 2;
+    public static final int RATIO_MUTATION = 5;
     private final int nbPopulationInitale;
     private final int NB_ELITISTE;
 
-    List<Population> populations;
+    private List<Population> population;
 
-    List<Population> populationsSelected;
+    private List<Population> newPopulation;
     private int nbTotalConflict;
 
-    public Genetic(Processor processor, int nbPopulationInitial, int nbElististe) {
+    private static final int NB_MAX_ITERATIONS = 100000000;
+
+    Genetic(Processor processor, int nbPopulationInitial, int nbElististe) {
         super(processor);
         this.nbPopulationInitale = nbPopulationInitial;
         this.initializePopulation();
         this.NB_ELITISTE = nbElististe;
-        this.populationsSelected = new ArrayList<>(this.nbPopulationInitale);
     }
 
     @Override
     protected void launch(){
-        this.initializePopulation();
-        while(!this.evaluatePopulation()){
+        evaluatePopulation(this.population, 0);
+        this.population.sort(new PopulationComparator());
+        int nbIteration = 0;
+        while(this.population.get(0).getNbConflit() != 0 && nbIteration < NB_MAX_ITERATIONS){
+            nbIteration++;
             this.setNewPopulation();
             this.setNewPopulationCroisement();
-            this.mutate(this.populationsSelected.size() / RATIO_MUTATION);
-//            this.populations = this.populationsSelected;
-            Logger.log(nbTotalConflict + "", 1);
+            this.population.clear();
+            this.population = this.newPopulation;
+            this.population.sort(new PopulationComparator());
+            if(nbIteration % 10000 == 0)
+                System.out.println(this.population.get(0).getNbConflit());
         }
+        System.out.println("meilleur resultat : " + this.population.get(0).getNbConflit());
     }
 
 
     // Optimisatio utilisé treemap pour éviter d'avoir a réaliser le trie après
     private void initializePopulation() {
-        this.populations = new ArrayList<>(this.nbPopulationInitale);
-        // Initliaser la populations initial
+        this.population = new ArrayList<>(this.nbPopulationInitale);
+        // Initliaser la population initial
         for(int i = 0; i < this.nbPopulationInitale; i++){
-            this.populations.add(new Population(processor.getNbQueens()));
+            this.population.add(new Population(processor.getNbQueens()));
         }
     }
 
     /**
-     * Evalue et trie la population
+     * Evalue la population
      * @return true si une solution a été trouvée, faux sinon
      */
-    private boolean evaluatePopulation(){
+    private void evaluatePopulation(List<Population> population, int indice){
         this.nbTotalConflict = 0;
-        for(int i = 0; i < this.nbPopulationInitale; i++){
-            int nbCOnflict = this.populations.get(i).calculateNbConflit();
-            if(nbCOnflict == 0){
-                return true;
+        for(int i = indice; i < population.size(); i++){
+            int nbConflict = population.get(i).calculateNbConflit();
+            if(nbConflict == 0){
+                return;
             }
-            this.nbTotalConflict += nbCOnflict;
+            this.nbTotalConflict += nbConflict;
         }
-        this.sortPopulation();
-        return false;
+    }
+
+    private List<Population> getElitiste(){
+        ArrayList<Population> populationElitiste = new ArrayList<>(this.NB_ELITISTE);
+        for(int i = 0; i < this.NB_ELITISTE; i++){
+            populationElitiste.add(this.population.get(i));
+        }
+        return populationElitiste;
     }
 
     /**
@@ -72,30 +82,37 @@ public class Genetic extends AlgoRecherche {
      * Roulette
      */
     private void setNewPopulation(){
-        // Peut ramer, a reprendre si c'est un peut long, à ameliorer
-        // Elitiste
+        this.newPopulation = new ArrayList<>(this.nbPopulationInitale);
+        this.newPopulation.addAll(getElitiste());
 
-        this.populationsSelected = new ArrayList<>(this.nbPopulationInitale);
-        for(int i = 0; i < this.NB_ELITISTE; i++){
-            this.populationsSelected.add(this.populations.get(i));
-        }
-        // this.populationsSelected = this.populations.subList(0, this.NB_ELITISTE);
 
         // Roulette
         Random randomGenerator = new Random();
         int x;
-        for(int i = 0; i < this.nbPopulationInitale - this.NB_ELITISTE; i++){
-            x = randomGenerator.nextInt(this.nbTotalConflict*(this.nbPopulationInitale -1));
+        for(int i = 0; i < (this.nbPopulationInitale/2) - this.NB_ELITISTE; i++){
+            x = randomGenerator.nextInt(this.nbTotalConflict*(this.nbPopulationInitale/2 -1));
             this.addElementsWithRoulette(x);
         }
+    }
+
+    private void addElementsWithRoulette(int x){
+        // A modifier pour prendre en fonction du rang et non du nombre de conflit
+        int conflicCumule = 0;
+        // On parcours dans le sens croissant car plus de chance de prendre les plus grand en premier
+        int i = 0;
+        do{
+            i++;
+            conflicCumule += (this.nbTotalConflict - this.population.get(i-1).getNbConflit());
+        }while (conflicCumule<x);
+        this.newPopulation.add((Population) this.population.get(i-1).clone());
     }
 
     /**
      * Croisement
      */
     private void setNewPopulationCroisement(){
-        int n = this.populationsSelected.size();
-        int m = n / RATIO_MUTATION;
+        int n = this.newPopulation.size();
+        int m = n / 2;
 
         Random randomGenerator = new Random();
 
@@ -103,57 +120,35 @@ public class Genetic extends AlgoRecherche {
             int index1 = randomGenerator.nextInt(n);
             int index2 = randomGenerator.nextInt(n);
             int indicePermutation = randomGenerator.nextInt(this.processor.getNbQueens());
-            List<Population> tempPopulation = merge(populationsSelected.get(index1), populationsSelected.get(index2), indicePermutation);
-            this.populationsSelected.set(index1, tempPopulation.get(0));
-            this.populationsSelected.set(index2, tempPopulation.get(1));
+            merge(newPopulation.get(index1), newPopulation.get(index2), indicePermutation);
         }
     }
 
-    private List<Population> merge(Population population1, Population population2, int indiceCoupe) {
-        List<Population> result = new ArrayList<>(4);
-        result.add(population1);
-        result.add(population2);
-        result.add(new Population(population1.getProcessor(), population2.getProcessor(), indiceCoupe));
-        result.add(new Population(population2.getProcessor(), population1.getProcessor(), indiceCoupe));
-        Collections.sort(result, new PopulationComparator());
-        return result;
+    private void merge(Population population1, Population population2, int indiceCoupe) {
+        Population p1 = new Population(population1.getProcessor(), population2.getProcessor(), indiceCoupe);
+        Population p2 = new Population(population2.getProcessor(), population1.getProcessor(), indiceCoupe);
+        mutate(p1);
+        mutate(p2);
+        this.newPopulation.add(p1);
+        this.newPopulation.add(p2);
     }
 
     /**
      * nbPermutation claque sur selectedPopulation
-     * @param nbPermutation
      */
-    private void mutate(int nbPermutation) {
-        int n = this.populationsSelected.size();
-
-        for (int i = 0; i < nbPermutation; i++) {
-            int indicePermutation = RandomCustom.getInt(n);
-            this.populationsSelected.get(indicePermutation).getProcessor().permuteRandom();
-            this.populationsSelected.get(indicePermutation).calculateNbConflit();
-        }
-
-    }
-
-
-    private void addElementsWithRoulette(int x){
-        int conflicCumule = 0;
-        // On parcours dans le sens croissant car plus de chance de prendre les plus grand en premier
-        int i = 0;
-        while(conflicCumule<x){
-            conflicCumule += (this.nbTotalConflict - this.populations.get(i).getNbConflit());
-            if(conflicCumule>x){
-                // On garde l'element i
-                this.populationsSelected.add(this.populations.get(i));
-            }
-            i++;
-        }
+    private void mutate(Population population) {
+        Random randomGenerator = new Random();
+        int indice = randomGenerator.nextInt(100);
+        if(indice>98)
+            population.getProcessor().permuteRandom();
+        population.calculateNbConflit();
     }
 
     /*
     trie de la population par ordre de fitness croissante
      */
     public void sortPopulation(){
-        Collections.sort(this.populations, new PopulationComparator());
+        this.population.sort(new PopulationComparator());
     }
 
     private class PopulationComparator implements Comparator<Population>{
