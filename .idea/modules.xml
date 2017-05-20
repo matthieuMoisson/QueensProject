@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/QueensProject.iml" filepath="$PROJECT_DIR$/QueensProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/QueensProject.iml" filepath="$PROJECT_DIR$/.idea/QueensProject.iml" />
+      <module fileurl="file://E:\Projet Informatique\Optimisation discrete\QueensProject\QueensProject.iml" filepath="E:\Projet Informatique\Optimisation discrete\QueensProject\QueensProject.iml" />
     </modules>
   </component>
 </project>

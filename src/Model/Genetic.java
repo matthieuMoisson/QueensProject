@@ -8,7 +8,6 @@ import java.util.*;
  */
 public class Genetic extends AlgoRecherche {
 
-    public static final int RATIO_MUTATION = 5;
     private final int nbPopulationInitale;
     private final int NB_ELITISTE;
 
@@ -37,6 +36,7 @@ public class Genetic extends AlgoRecherche {
             this.setNewPopulationCroisement();
             this.population.clear();
             this.population = this.newPopulation;
+            evaluatePopulation(this.population, 0);
             this.population.sort(new PopulationComparator());
             if(nbIteration % 10000 == 0)
                 System.out.println(this.population.get(0).getNbConflit());
@@ -104,7 +104,9 @@ public class Genetic extends AlgoRecherche {
             i++;
             conflicCumule += (this.nbTotalConflict - this.population.get(i-1).getNbConflit());
         }while (conflicCumule<x);
-        this.newPopulation.add((Population) this.population.get(i-1).clone());
+        Population p = (Population) this.population.get(i-1).clone();
+        //mutate(p);
+        this.newPopulation.add(p);
     }
 
     /**
@@ -119,14 +121,15 @@ public class Genetic extends AlgoRecherche {
         for (int i = 0; i < m; i++) {
             int index1 = randomGenerator.nextInt(n);
             int index2 = randomGenerator.nextInt(n);
-            int indicePermutation = randomGenerator.nextInt(this.processor.getNbQueens());
-            merge(newPopulation.get(index1), newPopulation.get(index2), indicePermutation);
+            int indice1 = randomGenerator.nextInt(this.processor.getNbQueens());
+            int indice2 = randomGenerator.nextInt(this.processor.getNbQueens());
+            merge(newPopulation.get(index1), newPopulation.get(index2), indice1, indice2);
         }
     }
 
-    private void merge(Population population1, Population population2, int indiceCoupe) {
-        Population p1 = new Population(population1.getProcessor(), population2.getProcessor(), indiceCoupe);
-        Population p2 = new Population(population2.getProcessor(), population1.getProcessor(), indiceCoupe);
+    private void merge(Population population1, Population population2, int indice1, int indice2) {
+        Population p1 = new Population(population1.getProcessor(), population2.getProcessor(), indice1, indice2);
+        Population p2 = new Population(population2.getProcessor(), population1.getProcessor(), indice1, indice2);
         mutate(p1);
         mutate(p2);
         this.newPopulation.add(p1);
@@ -138,8 +141,8 @@ public class Genetic extends AlgoRecherche {
      */
     private void mutate(Population population) {
         Random randomGenerator = new Random();
-        int indice = randomGenerator.nextInt(100);
-        if(indice>98)
+        int indice = randomGenerator.nextInt(1000);
+        if(indice>900)
             population.getProcessor().permuteRandom();
         population.calculateNbConflit();
     }

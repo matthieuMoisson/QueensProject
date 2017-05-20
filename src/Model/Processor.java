@@ -12,6 +12,9 @@ public class Processor implements Cloneable{
     int[] getQueens() {
         return queens;
     }
+    void setQueens(int[] q) {
+        queens = q;
+    }
 
     public int[] queens;
 

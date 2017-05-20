@@ -12,8 +12,8 @@ public class QueenGame {
 
     // ---------------------- Parameters
     private static final int NB_TABOU = 10;
-    private static final int NB_QUEEN = 500;
-    private static final Algorithms ALGO = Algorithms.TABOO;
+    private static final int NB_QUEEN = 100;
+    private static final Algorithms ALGO = Algorithms.GENETIC;
     // ---------------------- End Parameters
 
 
@@ -47,7 +47,7 @@ public class QueenGame {
                 algoRecherche = new Recuit(processor, 10000, 100, 0.05);
                 break;
             case GENETIC:
-                algoRecherche = new Genetic(processor, 10, 0);
+                algoRecherche = new Genetic(processor, 1000, 10);
                 break;
             default:
                 algoRecherche = new Recuit(processor,1000,1000, 0.9999, 0.00001);
@@ -63,11 +63,11 @@ public class QueenGame {
     }
 
     public static void main(String[] args) {
-//        QueenGame qg = new QueenGame();
-        //qg.launchAlgo(new Tabou(new Processor(NB_QUEEN), 200, NB_TABOU));
+        QueenGame qg = new QueenGame();
+        qg.launchAlgo(new Processor(NB_QUEEN), ALGO);
 
 
-        testAuto();
+        //testAuto();
     }
 
 

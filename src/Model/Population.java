@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.ArrayList;
+
 /**
  * Created by Matthieu on 06/04/2017.
  * J'ai modifié mon entête
@@ -17,10 +19,18 @@ public class Population implements Cloneable {
         this.processor = (Processor) processor.clone();
     }
 
-    Population(Processor processor1, Processor processor2, int indice) {
+    Population(Processor processor1, Processor processor2, int indice1, int indice2) {
         this.processor = (Processor) processor1.clone();
-        for (int i = indice; i < processor2.getNbQueens(); i++) {
-            this.processor.setQueenPosition(i, processor2.getQueens()[i]);
+        this.processor.setQueens(new int[this.processor.getNbQueens()]);
+        if(indice1>indice2){
+            int tmp = indice1;
+            indice1 = indice2;
+            indice2 = tmp;
+        }
+        for (int i = 0; i < this.processor.getNbQueens(); i++) {
+            if(i >= indice1 && i < indice2)
+                this.processor.setQueenPosition(i, processor2.getQueens()[i]);
+            this.processor.setQueenPosition(i, processor1.getQueens()[i]);
         }
         this.calculateNbConflit();
     }
