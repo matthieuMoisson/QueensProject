@@ -1,5 +1,7 @@
 package Model;
 
+import logger.Logger;
+
 import java.util.*;
 
 /**
@@ -10,23 +12,27 @@ public class Genetic extends AlgoRecherche {
 
     private final int nbPopulationInitale;
     private final int NB_ELITISTE;
+    private final int NB_CHANCE;
 
     private List<Population> population;
 
     private List<Population> newPopulation;
     private int nbTotalConflict;
 
-    private static final int NB_MAX_ITERATIONS = 100000000;
+    private static final int NB_MAX_ITERATIONS = 100000;
 
-    Genetic(Processor processor, int nbPopulationInitial, int nbElististe) {
+    Genetic(Processor processor, int nbPopulationInitial, int nbElististe, int nbChance) {
         super(processor);
+        Logger.log("Nb de conflit de la solution initial : " + this.processor.calculateNbConflicts(), 3);
         this.nbPopulationInitale = nbPopulationInitial;
         this.initializePopulation();
         this.NB_ELITISTE = nbElististe;
+        this.NB_CHANCE = nbChance;
     }
 
     @Override
     protected void launch(){
+
         evaluatePopulation(this.population, 0);
         this.population.sort(new PopulationComparator());
         int nbIteration = 0;
@@ -38,10 +44,11 @@ public class Genetic extends AlgoRecherche {
             this.population = this.newPopulation;
             evaluatePopulation(this.population, 0);
             this.population.sort(new PopulationComparator());
-            if(nbIteration % 10000 == 0)
-                System.out.println(this.population.get(0).getNbConflit());
+            //if(nbIteration % 10000 == 0)
+                //System.out.println(this.population.get(0).getNbConflit());
         }
-        System.out.println("meilleur resultat : " + this.population.get(0).getNbConflit());
+        Logger.log("Nb de conflit de la solution final : " + this.population.get(0).getNbConflit(), 3);
+        Logger.log("Nombe d'itération : " + nbIteration, 3);
     }
 
 
@@ -142,7 +149,7 @@ public class Genetic extends AlgoRecherche {
     private void mutate(Population population) {
         Random randomGenerator = new Random();
         int indice = randomGenerator.nextInt(1000);
-        if(indice>900)
+        if(indice>NB_CHANCE)
             population.getProcessor().permuteRandom();
         population.calculateNbConflit();
     }

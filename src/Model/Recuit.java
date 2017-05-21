@@ -51,7 +51,7 @@ class Recuit extends AlgoRecherche {
         Logger.log(("T0 = " + temperature), 1);
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, indice;
-        Logger.log("Nb de conflit de la solution initial : " + fMin, 1);
+        Logger.log("Nb de conflit de la solution initial : " + fMin, 3);
         float p;
 
         outerloop:
@@ -91,9 +91,9 @@ class Recuit extends AlgoRecherche {
             temperature *= MU;
         }
         // System.out.println("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts());
-        Logger.log("Nb de conflit de la meilleure solution : " + fMin, 1);
-        Logger.log("Nombre d'itération : " + nbIteration);
-        Logger.log("Temperature aprés itération : " + temperature);
+        Logger.log("Nb de conflit de la meilleure solution : " + fMin, 3);
+        Logger.log("Nombre d'itération : " + nbIteration, 3);
+        Logger.log("Temperature aprés itération : " + temperature, 3);
     }
 
     // Retourne l'indice d'une permutation aléatoire dans la liste de voisin

@@ -34,7 +34,7 @@ public class Tabou extends AlgoRecherche{
         this.initListeTabou();
         int fMin = this.processor.calculateNbConflicts();
         int fCourant = fMin, fSuivant = fMin, i = 0, indice = this.getBestNeighbors();
-        Logger.log("Nb de conflit de la solution initial : " + fMin, 1);
+        Logger.log("Nb de conflit de la solution initial : " + fMin, 3);
         do {
             if (listeVoisins.size() >= 0) {
                 indice = this.getBestNeighbors();
@@ -56,9 +56,9 @@ public class Tabou extends AlgoRecherche{
             i++;
 
         } while (i < nbMaxIteration && listeVoisins.size() > 0 && fSuivant != 0);
-        Logger.log("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts(), 1);
-        Logger.log("Nombe d'itération : " + i, 1);
-        Logger.log("Taille de la liste tabou : " + this.listeTabou.size(), 1);
+        Logger.log("Nb de conflit de la solution final : " + this.processor.calculateNbConflicts(), 3);
+        Logger.log("Nombe d'itération : " + i, 3);
+        Logger.log("Taille de la liste tabou : " + this.listeTabou.size(), 3);
     }
 
     /**
