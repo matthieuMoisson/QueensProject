@@ -75,8 +75,8 @@ public class QueenGame {
 
         Logger.logLevelToDisplay = 3;
 
-        tabouAuto();
-        recuitAuto();
+        //tabouAuto();
+        //recuitAuto();
         geneticAuto();
     }
 
@@ -114,12 +114,12 @@ public class QueenGame {
         AlgoRecherche recuit;
         Processor processor;
 
-        int[] nbQueenArray = {10, 20 , 50, 100};
-        int[] n1Array = {100, 1000, 10000};
+        int[] nbQueenArray = {1000};
+        int[] n1Array = {1000, 10000};
         int[] n2Array = {1, 10, 100};
 
         long nbMillis = 0;
-        long[] rowValue = new long[n1Array.length* n2Array.length];
+        long[] rowValue = new long[(n1Array.length+1)* (n2Array.length+1)];
 
         Logger.log(("------------------------------------------------------------") ,3);
         Logger.log(("RECUI"),3);
@@ -133,7 +133,7 @@ public class QueenGame {
                     Logger.log(("--------------"), 3);
                     Logger.log(("Nb 2 : " + n2Array[k]), 3);
                     processor = new Processor(nbQueenArray[i], true);
-                    recuit = new Recuit(processor, n1Array[j], n1Array[j], 0.05);
+                    recuit = new Recuit(processor, n1Array[j], n1Array[j], 0.005);
                     nbMillis = recuit.run();
                     rowValue[(j+1)*(k+1)] = nbMillis;
                 }
@@ -154,7 +154,7 @@ public class QueenGame {
         int[] elitisteArray = {0, 10, 50};
 
         long nbMillis = 0;
-        long[] rowValue = new long[elitisteArray.length*initialesArray.length];
+        long[] rowValue = new long[(elitisteArray.length+1)*(1+initialesArray.length)];
 
         Logger.log(("------------------------------------------------------------") ,3);
         Logger.log(("GENETIC"),3);
